@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -37,6 +44,7 @@ public class BrowserFragment extends Fragment {
     WebView myWebview;
     EditText edtText;
     Button btnSearch;
+    String url;
 
     private OnFragmentInteractionListener mListener;
 
@@ -102,9 +110,10 @@ public class BrowserFragment extends Fragment {
         btnSearch = (Button) getActivity().findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String customHtml = "<html><body><h1>Hello, WebView</h1></body></html>";
-                myWebview.loadData(customHtml, "text/html", "UTF-8");
-            }
+                url = edtText.getText().toString();
+                new getHTML().execute(url);
+
+                }
         });
 
 
@@ -168,6 +177,40 @@ public class BrowserFragment extends Fragment {
         }
     }
 
+
+    public class getHTML extends AsyncTask<String,Void,String>
+    {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String response = "";
+            for (String url : urls) {
+                DefaultHttpClient client = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
+                try {
+                    HttpResponse execute = client.execute(httpGet);
+                    InputStream content = execute.getEntity().getContent();
+
+                    BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
+                    String s = "";
+                    while ((s = buffer.readLine()) != null) {
+                        response += s;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response)
+        {
+            myWebview.loadDataWithBaseURL("", response, "text/html", "UTF-8", "");
+        }
+
+    }
 
 }
 
