@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class MainActivity extends Activity implements BrowserFragment.OnFragmentInteractionListener {
 
     FragmentManager fragmentManager = getFragmentManager();
+    int spot = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +49,33 @@ public class MainActivity extends Activity implements BrowserFragment.OnFragment
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onFragmentInteraction(String instruction) {
+        BrowserFragment browserFrag = new BrowserFragment();
+        ArrayList fragments = new ArrayList();
+
+        if(instruction.equals("New")) {
+            fragments.add(browserFrag);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, browserFrag);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+        else if(instruction.equals("Previous")){
+            fragments.get(spot-1);
+            browserFrag =(BrowserFragment)fragments.get(spot-1);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, browserFrag);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+       else if(instruction.equals("Next")){
+            fragments.get(spot+1);
+            browserFrag =(BrowserFragment)fragments.get(spot+1);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, browserFrag);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
 
     }
 }

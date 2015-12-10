@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -40,11 +42,15 @@ import java.net.URLConnection;
  * Use the {@link BrowserFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BrowserFragment extends Fragment {
+public class BrowserFragment extends Fragment implements View.OnClickListener {
     WebView myWebview;
     EditText edtText;
     Button btnSearch;
     String url;
+    String instruction;
+    Button btnNew;
+    Button btnNext;
+    Button btnPrevious;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,26 +88,26 @@ public class BrowserFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_browser, container, false);
 
 
-
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //changeNumber(getArguments().getString("number"));
-
+        mListener = (OnFragmentInteractionListener) getActivity();
 
         edtText = (EditText) getActivity().findViewById(R.id.editText);
         myWebview = (WebView) getActivity().findViewById(R.id.webView);
         myWebview.getSettings().setDomStorageEnabled(true);
         myWebview.getSettings().setJavaScriptEnabled(true);
+        btnNew = (Button) getActivity().findViewById(R.id.btnNew);
+        btnNew.setOnClickListener(this);
+        btnNext = (Button) getActivity().findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(this);
+        btnPrevious= (Button)getActivity().findViewById(R.id.btnPrev);
+        btnPrevious.setOnClickListener(this);
 
 
         myWebview.setWebViewClient(new WebViewClient());
@@ -111,9 +117,9 @@ public class BrowserFragment extends Fragment {
         btnSearch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 url = edtText.getText().toString();
-                new getHTML().execute(url);
+                new getHTML().execute("https://www.google.com/");
 
-                }
+            }
         });
 
 
@@ -137,19 +143,13 @@ public class BrowserFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onClick(View v) {
+        mListener.onFragmentInteraction(instruction);
+    }
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+       void onFragmentInteraction(String instruction);
     }
 
 
@@ -211,6 +211,12 @@ public class BrowserFragment extends Fragment {
         }
 
     }
+
+
+
+
+
+
 
 }
 
