@@ -41,6 +41,7 @@ import java.net.URLConnection;
  * to handle interaction events.
  * Use the {@link BrowserFragment#newInstance} factory method to
  * create an instance of this fragment.
+ * Random text for testing
  */
 public class BrowserFragment extends Fragment implements View.OnClickListener {
     WebView myWebview;
